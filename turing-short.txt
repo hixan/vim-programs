@@ -1,0 +1,83 @@
+go to the line below, type _y$@"
+/^@set register x/+1"xy$oexecute machine@x
+
+vim: nohlsearch scrolloff=0
+
+!Pal state 0
+
+# increments the binary number on the tape by 1
+--------------------+-------+-------+------+-------------------+
+&increment state 0  s e     w e     m r    g increment state 1 |
+                    s 0     w 0     m l    g increment state 0 |
+                    s 1     w 1     m l    g increment state 0 |
+&increment state 1  s e     w 1     m l    g increment state 2 |
+                    s 0     w 1     m r    g increment state 2 |
+                    s 1     w 0     m r    g increment state 1 |
+&increment state 2  s e     w e     m r    g ACCEPT            |
+                    s 0     w 0     m l    g increment state 2 |
+                    s 1     w 1     m l    g increment state 2 |
+--------------------+-------+-------+------+-------------------+
+
+
+# 3 state busy beaver - print 6 ones
+--------------------+-------+-------+------+-------------------+
+&bb state 0         s e     w 1     m l    g bb state 1        |
+                    s 0     w e     m n    g bb state 0        |
+                    s 1     w 1     m n    g ACCEPT            |
+&bb state 1         s e     w e     m l    g bb state 2        |
+                    s 0     w e     m n    g bb state 0        |
+                    s 1     w 1     m l    g bb state 1        |
+&bb state 2         s e     w 1     m r    g bb state 2        |
+                    s 0     w e     m n    g bb state 0        |
+                    s 1     w 1     m r    g bb state 0        |
+--------------------+-------+-------+------+-------------------+
+
+# palindrome
+---------------|-------|-------|-------|--------------|
+&Pal state 0   s e     w e     m l     g Pal state 1  |
+               s 0     w 0     m r     g Pal state 0  |
+               s 1     w 1     m r     g Pal state 0  |
+&Pal state 1   s e     w 1     m n     g ACCEPT       |
+               s 0     w e     m l     g Pal state 2  |
+               s 1     w e     m l     g Pal state 4  |
+&Pal state 2   s e     w e     m r     g Pal state 3  |
+               s 0     w 0     m l     g Pal state 2  |
+               s 1     w 1     m l     g Pal state 2  |
+&Pal state 3   s e     w e     m n     g Pal state 0  |
+               s 0     w e     m r     g Pal state 0  |
+               s 1     w 1     m n     g Pal state 6  |
+&Pal state 4   s e     w e     m r     g Pal state 5  |
+               s 0     w 0     m l     g Pal state 4  |
+               s 1     w 1     m l     g Pal state 4  |
+&Pal state 5   s e     w e     m n     g Pal state 0  |
+               s 0     w 0     m n     g Pal state 6  |
+               s 1     w e     m r     g Pal state 0  |
+&Pal state 6   s e     w 0     m n     g ACCEPT       |
+               s 0     w e     m r     g Pal state 6  |
+               s 1     w e     m r     g Pal state 6  |
+---------------|-------|-------|-------|--------------|
+
+==============================
+eeeeeee010eeeeee1111001011010011110eee
+=======^======================
+execute machine
+
+execute code with the name as the current line and delete the line
+@set register x
+_d$"_dd/@"#/e+1yt#@"
+@goto tape#/^=*\^/ek#@read tape#ogoto tape@x"tyl#@write1#ogoto tape@xr1#
+@write0#ogoto tape@xr0#@writee#ogoto tape@xre#@mover#ogoto tape@xjlxhP#
+@all steps#oone step@xoall steps@x#@moven#lh#
+@movel#ogoto tape@xjhxlp#@execute machine#/^!/e+1"sy$oall steps@x#
+@get write value#/&s/;/s t/;/w /el"wyl#
+@move tape#/&s/;/s t/;/m /e+1ylomovep@x#
+@update state#/&s/;/s t/;/g /elv/ *|/b-1"sy#
+@write value#oget write value@xogoto tape@x"wPlx#
+@one step#oread tape@xowrite value@xomove tape@xoupdate state@x#
+
+
+# registers in use:
+# x - macro to run named command in current line
+# t - tape value
+# w - tape write value
+# s - machine state
